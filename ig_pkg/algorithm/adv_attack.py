@@ -3,6 +3,7 @@
 # https://github.com/fxnnxc/counterfactuals/blob/3b9470648755b2f534aa8802782e3a65c0fccbd8/counterfactuals/adv.py#L105
 
 import torch 
+import torch.nn as nn
 
 from tqdm import tqdm 
 def run_adv_attack(x,

@@ -1,51 +1,9 @@
-import torch
-import torch.nn as nn
 import torch.optim as optim
+import torch
 from tqdm import tqdm
 
-from .model import *
 
-class Gen_wrapper():
-    def __init__(self, name_model, path, res, nz = 512):        
-        if name_model == 'stylegan2':
-            G = stylegan2(path, res)
-            
-        elif name_model == 'stylegan':
-            G = stylegan(path, res)
-            
-        elif name_model == 'pggan':
-            G = pggan(path, res)
-                        
-        self.gen = G
-        self.nz = nz
-        
-        self.find_z = make_find_z_fun()
-        
-    def decode(self, z): # image
-        return self.gen(z) 
-    
-    def sample(self, batchsize):
-        return torch.randn(batchsize, self.nz) 
-    
-    def encode(self, x):
-        z = self.sample(x.size(0)).to(x.device)        
-        return self.find_z(self.gen, z, x)
-
-# class BaseGenerator(nn.Module):
-#     def __int__(self, nz = 512, **kwargs):
-#         self.nz = nz
-    
-#     def forward(self, x):
-#         return x 
-    
-#     def sample(self, batchsize):
-#         return torch.randn(batchsize, self.nz) 
-    
-#     def encode(self, x):
-#         z = self.sample(x.size(0)).to(x.device)
-        
-        
-def make_find_z_fun(loss_fun = torch.nn.MSELoss(),
+def make_find_z_fun(loss_fun = torch.nn.MSELoss,
                     max_steps: int = 5000,                    
                     lr: float = 0.1,
                     diff: float = 1e-3,
@@ -73,7 +31,6 @@ def make_find_z_fun(loss_fun = torch.nn.MSELoss(),
         optimizer = optim.Adam([z], lr=lr)
 
         print("Optimizing latent representation ...")
-        # optimizer.zero_grad()
 
         with tqdm(total=max_steps) as progress_bar:
             for step in range(max_steps):
@@ -88,7 +45,6 @@ def make_find_z_fun(loss_fun = torch.nn.MSELoss(),
 
                 if loss < diff:
                     break
-                # optimizer.zero_grad()
                 loss.backward()
 
                 optimizer.step()
