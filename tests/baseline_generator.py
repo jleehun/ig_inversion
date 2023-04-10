@@ -12,11 +12,12 @@ print(baseline.size(), baseline.min(), baseline.max(), baseline.mean())
 
 
 
-name = 'optimizer'
-decoder = None 
-classifier = None 
-b_generator = get_baseline_generator(name)
-baseline = b_generator(x, y=y)
-print(baseline.size(), baseline.min(), baseline.max(), baseline.mean())
+
+# name = 'optimizer'
+# decoder = None 
+# classifier = None 
+# b_generator = get_baseline_generator(name)
+# baseline = b_generator(x, y=y)
+# print(baseline.size(), baseline.min(), baseline.max(), baseline.mean())
 
 
