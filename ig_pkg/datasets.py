@@ -1,3 +1,11 @@
+import torch 
+import torchvision 
+import torchvision.transforms as T
+from torch.utils.data import Dataset
+import os
+
+from torchvision import datasets, models
+
 
 IMAGENET_MEAN = [0.485, 0.456, 0.406]
 IMAGENET_STD  = [0.229, 0.224, 0.225]
@@ -11,10 +19,29 @@ CIFAR10_STD  = [0.2023, 0.1994, 0.2010]
 MNIST_MEAN = [0.1307]
 MNIST_STD  = [0.3081] 
 
+class custom_dataset(Dataset):
+    def __init__(self, name, root = '/root/data', transform = None):                        
+        self.root = root
+        
+        if name == 'LSUN_bedroom': self.dir = os.path.join(self.root, 'LSUN_bedroom', 'real_10k')        
+        elif name == 'FFHQ': self.dir = os.path.join(self.root, name, 'img')        
+        else: self.dir = os.path.join(self.root, name)        
+        
+        self.file_names = sorted(os.listdir(self.dir))
+        self.transform = transform
+    
+    def __len__(self):
+        return len(self.file_names)
 
+    def __getitem__(self, idx):
+        img = Image.open(os.path.join(self.dir, self.file_names[idx]))
+        
+        if self.transform:
+            img = self.transform(img)
+
+        return img
+    
 # ----------- STATIC functions -----------------
-import torchvision 
-import torchvision.transforms as T
 def get_datasets(name, data_path, transform=None):
     # ---- Define the wrapper if required -----
     if transform is None:
@@ -33,10 +60,17 @@ def get_datasets(name, data_path, transform=None):
                             T.ToTensor(), 
                             T.Normalize(IMAGENET_MEAN, IMAGENET_STD)
                         ])
+        else:
+            transform = T.Compose([
+                            T.Resize(224),
+                            T.CenterCrop(224),
+                            T.ToTensor(), 
+                            T.Normalize(IMAGENET_MEAN, IMAGENET_STD)
+                        ])
         
 
     # ------ CIFAR ---------
-    if name =="cifar10":
+    if name =="cifar10": # sadsad
         train_dataset  = torchvision.datasets.CIFAR10(root=data_path,  
                                                     train=True,  
                                                     download=True,
@@ -68,14 +102,17 @@ def get_datasets(name, data_path, transform=None):
     elif name == "fashion_mnist":
         train_dataset = torchvision.datasets.FashionMNIST(root=data_path, train=True, transform=transform, download=True)
         valid_dataset = torchvision.datasets.FashionMNIST(root=data_path, train=False, transform=transform, download=True) 
-
+    
+    elif name == 'celebAHQ_identity':        
+        train_dataset = datasets.ImageFolder(os.path.join(data_path, 'train'), transform)
+        valid_dataset = datasets.ImageFolder(os.path.join(data_path, 'test'), transform)
+        # https://github.com/ndb796/CelebA-HQ-Face-Identity-and-Attributes-Recognition-PyTorch/blob/main/Facial_Identity_Classification_Test_with_CelebA_HQ.ipynb
     else:
         raise ValueError(f"{name} is not implemented data")
     return train_dataset, valid_dataset
 
 
-import torch 
-import torchvision.transforms as T
+
 def get_imagenet_image_boundary():
     
     a = torch.zeros(3,224,224)
@@ -88,6 +125,9 @@ def get_imagenet_image_boundary():
 
 
 if __name__ =="__main__":
-    min_img, max_img = get_imagenet_image_boundary()
-    print(min_img[:,0,0])
-    print(max_img[:,0,0])
+#     min_img, max_img = get_imagenet_image_boundary()
+#     print(min_img[:,0,0])
+#     print(max_img[:,0,0])
+    train_dataset, test_dataset = get_datasets(name= 'celebAHQ_identity', data_path = '/root/data/CelebA_HQ_facial_identity_dataset')
+    print('hello')
+
