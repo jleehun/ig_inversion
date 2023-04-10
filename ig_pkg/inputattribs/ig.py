@@ -19,9 +19,9 @@ def make_interpolation(x, M, baseline):
 
 
 
-def ig(model, x, y, baseline, **kwrags):
-    M = 25
-    device = x.device
+def ig(model, x, y, baseline, device='cuda:0', M=25, **kwrags):
+    x = x.to(device)
+    baseline = baseline.to(device)
     model.zero_grad()
     
     X = make_interpolation(x, M, baseline)
@@ -30,7 +30,7 @@ def ig(model, x, y, baseline, **kwrags):
     
     output = model(X,)
     score = torch.softmax(output, dim=-1)
-    class_score = torch.FloatTensor(X.size(0), output.size()[-1]).zero_().to("cuda").type(X.dtype)
+    class_score = torch.FloatTensor(X.size(0), output.size()[-1]).zero_().to(device).type(X.dtype)
     class_score[:,y] = score[:,y]
     output.backward(gradient=class_score)
 

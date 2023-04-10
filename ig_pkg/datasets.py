@@ -15,16 +15,25 @@ MNIST_STD  = [0.3081]
 # ----------- STATIC functions -----------------
 import torchvision 
 import torchvision.transforms as T
-def get_datasets(name, data_path):
+def get_datasets(name, data_path, transform=None):
     # ---- Define the wrapper if required -----
-    if 'cifar' in name or 'imagenet' in name or 'mnist' in name:
-        mean, std = {
-            "cifar10": [CIFAR10_MEAN, CIFAR10_STD],
-            "cifar100": [CIFAR100_MEAN, CIFAR100_STD],
-            "mnist": [MNIST_MEAN, MNIST_STD],
-            "fashion_mnist": [MNIST_MEAN, MNIST_STD], # incorrect!
-        }[name]
-        transform = T.Compose([T.ToTensor(), T.Normalize(mean, std)])
+    if transform is None:
+        if 'cifar' in name or 'mnist' in name:
+            mean, std = {
+                "cifar10": [CIFAR10_MEAN, CIFAR10_STD],
+                "cifar100": [CIFAR100_MEAN, CIFAR100_STD],
+                "mnist": [MNIST_MEAN, MNIST_STD],
+                "fashion_mnist": [MNIST_MEAN, MNIST_STD], # incorrect!
+            }[name]
+            transform = T.Compose([T.ToTensor(), T.Normalize(mean, std)])
+        elif 'imagenet' in name:
+            transform = T.Compose([
+                            T.Resize(256),
+                            T.CenterCrop(256),
+                            T.ToTensor(), 
+                            T.Normalize(IMAGENET_MEAN, IMAGENET_STD)
+                        ])
+        
 
     # ------ CIFAR ---------
     if name =="cifar10":

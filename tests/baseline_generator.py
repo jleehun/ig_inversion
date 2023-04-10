@@ -7,7 +7,7 @@ y=1
  
 name = 'zero'
 b_generator = get_baseline_generator(name)
-baseline = b_generator(x, y=y)
+baseline = b_generator(x=x, y=y)
 print(baseline.size(), baseline.min(), baseline.max(), baseline.mean())
 
 
