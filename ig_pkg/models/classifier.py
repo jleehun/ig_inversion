@@ -20,12 +20,14 @@ class BaseClassifier():
     def forward(self, x):
         return x 
     
-def get_classifier(name, path = '/root/data'):    
+def get_classifier(name, num_labels, path = '/root/data' ):    
     if name == 'resnet':
-        path = '/root/pretrained/facial_identity_classification_transfer_learning_with_ResNet18.pth'
-        model = models.resnet18(pretrained=True)
+#         path = '/root/pretrained/facial_identity_classification_transfer_learning_with_ResNet18.pth'
+        model = models.resnet18(pretrained=True)        
         num_features = model.fc.in_features
-        model.fc = nn.Linear(num_features, 307) # multi-class classification (num_of_class == 307)
+        print(num_features)
+        print(num_labels)
+        model.fc = nn.Linear(num_features, num_labels) # multi-class classification (num_of_class == 307)
         model.load_state_dict(torch.load(path))
 
     return model

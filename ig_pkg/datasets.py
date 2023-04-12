@@ -107,6 +107,14 @@ def get_datasets(name, data_path, transform=None):
         train_dataset = datasets.ImageFolder(os.path.join(data_path, 'train'), transform)
         valid_dataset = datasets.ImageFolder(os.path.join(data_path, 'test'), transform)
         # https://github.com/ndb796/CelebA-HQ-Face-Identity-and-Attributes-Recognition-PyTorch/blob/main/Facial_Identity_Classification_Test_with_CelebA_HQ.ipynb
+    
+    elif name == 'celebAHQ_whole':        
+        train_dataset = datasets.ImageFolder(data_path, transform)
+        valid_dataset = 1
+    
+    elif name == 'celebAHQ_5':        
+        train_dataset = datasets.ImageFolder(data_path, transform)
+        valid_dataset = 1
     else:
         raise ValueError(f"{name} is not implemented data")
     return train_dataset, valid_dataset

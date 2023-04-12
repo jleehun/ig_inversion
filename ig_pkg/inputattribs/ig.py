@@ -2,11 +2,6 @@
 import torch 
 from torch.autograd import Variable
 
-
-    
-    
-    
-
 def make_interpolation(x, M, baseline):
     lst = [] 
     for i in range(M+1):
@@ -14,10 +9,6 @@ def make_interpolation(x, M, baseline):
         interpolated =x * (alpha) + baseline * (1-alpha)
         lst.append(interpolated.clone())
     return torch.stack(lst)
-
-
-
-
 
 def ig(model, x, y, baseline, device='cuda:0', M=25, **kwrags):
     x = x.to(device)
