@@ -60,6 +60,15 @@ def get_datasets(name, data_path, transform=None):
                             T.ToTensor(), 
                             T.Normalize(IMAGENET_MEAN, IMAGENET_STD)
                         ])
+        elif 'celeb' in name:
+            print('flip')
+            transform = T.Compose([
+                            T.Resize(224),
+                            T.RandomHorizontalFlip(),
+                            T.CenterCrop(224),
+                            T.ToTensor(), 
+                            T.Normalize(IMAGENET_MEAN, IMAGENET_STD)
+                        ])
         else:
             transform = T.Compose([
                             T.Resize(224),

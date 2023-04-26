@@ -13,6 +13,7 @@ from ig_pkg.misc import convert_to_img, process_heatmap
 def get_baseline_generator(name, **kwargs):
     cls = {
         'zero': ZeroBaselineGenerator,
+        'one': OneBaselineGenerator,
         'min': MinBaselineGenerator,
         'max': MaxBaselineGenerator,
         'scalar' :ScalarBaselineGenerator,
@@ -22,7 +23,7 @@ def get_baseline_generator(name, **kwargs):
         'gaussian_blur': GaussianBlurredBaselineGenerator,
         'gaussian': GaussianBaselineGenerator,
         'uniform': UniformBaselineGenerator,
-        'maximumdistance': MaximumDistanceBaselineGenerator,
+        'maximumdistance': MaximumDistanceBaselineGenerator,        
     }
     return cls[name](**kwargs)
 
@@ -35,7 +36,16 @@ class BaselineGenerator():
     
     def generate_baseline(self, x, **kwargs):
         pass
+
+class OneBaselineGenerator(BaselineGenerator):
+    def __init__(self, **kwargs):
+        super().__init__()
+        pass 
     
+    def generate_baseline(self, x, **kwargs):
+        baseline = torch.ones_like(x).to(x.device)
+        return baseline
+
 class ZeroBaselineGenerator(BaselineGenerator):
     def __init__(self, **kwargs):
         super().__init__()
