@@ -55,11 +55,12 @@ def get_datasets(name, data_path, transform=None):
             transform = T.Compose([T.ToTensor(), T.Normalize(mean, std)])
         elif 'imagenet' in name:
             transform = T.Compose([
-                            T.Resize(256),
-                            T.CenterCrop(256),
-                            T.ToTensor(), 
-                            T.Normalize(IMAGENET_MEAN, IMAGENET_STD)
-                        ])
+                T.Resize(224),
+                T.CenterCrop(224),
+                T.ToTensor(),
+                T.Normalize(mean = IMAGENET_MEAN, std = IMAGENET_STD),
+            ])
+
         elif 'celeb' in name:
             print('flip')
             transform = T.Compose([

@@ -48,13 +48,13 @@ def get_rank(attribution, k):
     
 def delete_attribution(tensor, attribution, k, device):
     idx = get_rank(attribution, k)
-    print(len(idx))
-    tensor = tensor.clone().detach()
+#     print(len(idx))
+    temp = tensor.clone().detach()
     for i in idx:
         j, k = i
-        tensor[:, j, k] = -1000 # convert to image: Normalize
-    tensor = tensor.to(device)
-    return tensor
+        temp[:, j, k] = 0
+    temp = temp.to(device)
+    return temp
 
 def kendal_tau(tensor, attrib):    
     temp = tensor.mean(dim = 0)
@@ -62,14 +62,16 @@ def kendal_tau(tensor, attrib):
     temp2 = attri.flatten().detach().cpu().numpy()
     val, p_val = stats.kendalltau(temp1, temp2)
     return val
-        
-def pipeline(model, tensor, baseline, k, device, name):    
+    
+    
+def pipeline(model, tensor, baseline, attr, k, device, name):    
     model = model.to(device)
     logit_orig = model(tensor.unsqueeze(0))
     score_orig = nn.functional.softmax(logit_orig, dim = -1)
     init_pred = torch.argmax(logit_orig).item()
     prob_orig = score_orig[0, init_pred].item()
-    attr = ig(model.to(device), tensor.to(device), init_pred, baseline, device)
+#     if attr: pass
+#     else: attr = ig(model.to(device), tensor.to(device), init_pred, baseline, device)
     
     new_tensor = delete_attribution(tensor, attr, k, device)
     logit_new = model(new_tensor.unsqueeze(0))
@@ -77,10 +79,58 @@ def pipeline(model, tensor, baseline, k, device, name):
     prob_new = score_new[0, init_pred].item()
     
     metric_aopc = prob_orig - prob_new
-    metric_lodds = np.log(prob_new / prob_orig)        
+    metric_lodds = np.log(prob_new / (prob_orig + 1e-5))        
 #     metric_kendall = 
-    return metric_aopc, metric_lodds
+    return metric_aopc, metric_lodds    
+
+def kendal_correlation(model, tensor, baseline, attr, device):    
+    model = model.to(device)
+    tensor = tensor.to(device)
+    logit_orig = model(tensor.unsqueeze(0))    
+    init_pred = torch.argmax(logit_orig).item()
+    init_min = torch.argmin(logit_orig).item()
     
+    temp = ig(model.to(device), tensor, init_min, baseline, device, M=25)            
+    temp = temp.detach().cpu().numpy()
+    val, p_val = stats.kendalltau(attr, temp)
+        
+    return val
+
+def kendal_correlation_mean(model, tensor, baseline, attr, k, device):    
+    model = model.to(device)
+    tensor = tensor.to(device)
+    logit_orig = model(tensor.unsqueeze(0))    
+    init_pred = torch.argmax(logit_orig).item()
+    
+    attribution_zero = []
+    kendal = []
+    
+    for i in range(1000):
+        temp = ig(model.to(device), ferrot_tensor, i, baseline, device, M=25)
+        temp = temp.detach().cpu().numpy()
+        temp = temp.flatten()
+                
+        val, p_val = stats.kendalltau(attr, temp)
+        
+        attribution_zero.append(temp) # list        
+        kendal.append(val)
+#     return attribution_zero, kendal
+    
+    kendal = list_pre(kendal)
+    
+    cor = sum(kendal) / len(kendal)
+    return cor
+
+def list_argmax(given):
+    f = lambda i: given[i]
+    arg = max(range(len(given)), key=f)
+    return arg
+
+def list_pre(given):
+    arg = list_argmax(given)
+    given.remove(given[arg])
+    return given
     
 
+    
     
