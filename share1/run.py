@@ -2,7 +2,7 @@ from evaluations import ImageNet1kEvaluator
 import numpy as np 
 import argparse
 from distutils.util import strtobool
-from evaluations.morf_lerf import morf, lerf
+from evaluations.morf_lerf import * #morf, lerf, 
 
 parser =argparse.ArgumentParser()
 parser.add_argument("--data-path",  required=True)
@@ -28,7 +28,9 @@ evaluator = ImageNet1kEvaluator(args.data_path, 'results', debug=args.debug)
 
 fn = {
     'morf': morf,
-    'lerf' : lerf
+    'lerf' : lerf,
+    'aopc': aopc,
+    'lodds': lodds
 }[args.measure]
 
 evaluator.evaluate(attrs, model, fn, device='cuda:0', **vars(args))

@@ -46,7 +46,7 @@ class ImageNet1kEvaluator():
         pbar.set_description(f" Evaluation [👾] | {model.__class__.__name__} - {fn.__name__} | ")
         for idx in pbar:
             input, label = self.valid_dataset[idx]
-            input = input
+            input = input.to(device)
             attr = attrs[idx]
             score = fn(input, label, attr, model, device, **kwargs)
             self.sample_result_dict[fn.__name__].append(score)
