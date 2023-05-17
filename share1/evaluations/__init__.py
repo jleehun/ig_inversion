@@ -34,13 +34,13 @@ class ImageNet1kEvaluator():
         self.save()
     
     def evaluate(self, attrs, model, fn, device='cuda:0', **kwargs):
-        
+        print(f'{fn.__name__}_{kwargs["ratio"]}')
         """
         attribution evaluation function 
         fn : (input, label, attr, model) --> score 
         """
         
-        self.sample_result_dict[fn.__name__] = []
+        self.sample_result_dict[f'{fn.__name__}_{kwargs["ratio"]}'] = []
         model = model.to(device)
         pbar = tqdm(range(len(self.valid_dataset)))
         pbar.set_description(f" Evaluation [👾] | {model.__class__.__name__} - {fn.__name__} | ")
@@ -49,13 +49,13 @@ class ImageNet1kEvaluator():
             input = input.to(device)
             attr = attrs[idx]
             score = fn(input, label, attr, model, device, **kwargs)
-            self.sample_result_dict[fn.__name__].append(score)
+            self.sample_result_dict[f'{fn.__name__}_{kwargs["ratio"]}'].append(score)
             
             if self.debug:
                 if idx > 10:
                     break 
             
-        self.average_result_dict[fn.__name__] = np.mean(self.sample_result_dict[fn.__name__])
+        self.average_result_dict[f'{fn.__name__}_{kwargs["ratio"]}'] = np.mean(self.sample_result_dict[f'{fn.__name__}_{kwargs["ratio"]}'])
         self.save()
         
     def save(self):        

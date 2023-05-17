@@ -21,7 +21,7 @@ args = parser.parse_args()
 
 from torchvision.models import resnet50, ResNet50_Weights
 weights = ResNet50_Weights.IMAGENET1K_V1
-model = resnet50(weights=weights)
+model = resnet50(weights=weights).eval()
 attrs = np.load(args.attr_path)
 evaluator = ImageNet1kEvaluator(args.data_path, 'results', debug=args.debug)
 

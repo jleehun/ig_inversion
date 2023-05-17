@@ -42,7 +42,7 @@ my_cmap=plt.cm.seismic(np.arange(plt.cm.seismic.N))
 def get_rank(attribution, k):
     flat = attribution.flatten()
     num = int(attribution.size(-1) * k / 100)
-    val, idx = torch.topk(flat, num)
+    val, idx = torch.topk(flat, num ** 2)
     idx_list = [[x.item() // 224, x.item() % 224] for x in idx]
     return idx_list
     

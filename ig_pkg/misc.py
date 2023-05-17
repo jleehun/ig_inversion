@@ -110,6 +110,25 @@ def convert_to_img(tensor, means = IMAGENET_MEAN, stds = IMAGENET_STD):
     img = img.clip(0,255)
     return img 
 
+def convert_mask_img(tensor, means = IMAGENET_MEAN, stds = IMAGENET_STD):
+    if tensor.device == 'cpu':
+        pass
+    else: tensor = tensor.detach().cpu()
+    a,b = np.where(tensor.numpy().mean(axis = 0) == 0)
+    
+    means = torch.tensor(means).view(len(means), 1,1)
+    stds = torch.tensor(stds).view(len(means), 1,1)
+    img = (tensor * stds) + means
+    img = img.permute(1,2,0).numpy()
+    img = img*255
+    img = img.astype(int)
+    img = img.clip(0,255)
+    
+    for i in range(len(a)):
+        x, y = a[i], b[i]
+        img[x, y, :] = 0
+    return img 
+
 def process_heatmap(R, my_cmap=plt.cm.seismic(np.arange(plt.cm.seismic.N))):
     if R.device == 'cpu':
         R = R.cpu()
