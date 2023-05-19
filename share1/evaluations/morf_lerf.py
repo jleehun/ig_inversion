@@ -57,7 +57,8 @@ def mask_MoRF(x, attr, ratio):
     x = x.reshape(3, -1) #3x(224x224)
     attr = torch.tensor(attr).flatten() # (224x224)
     v, index = torch.sort(attr, descending=True, dim=0)    
-    index = index[:int(x.size(1)*x.size(1)*ratio)]
+    index = index[:int(x.size(1)*ratio)]
+#     print(x.size(1)*ratio)
     x[:, index] = 0.0 
     x = x.reshape(*original_size)
     return x 
