@@ -14,13 +14,15 @@ def perturb(x, eps, grad, target = None):
     x_prime = torch.clamp(x_prime, 0, 1)
     return x_prime
 
-def FGSMAttack(image, model, epsilons=0.05, loss=nn.CrossEntropyLoss(), target=None, device=None):
-    model.eval()
-    image_prime = None
-    if device:
-        images, model = images.to(device), model.to(device)
+def FGSMAttack(tenser, model, epsilons=0.05, loss=nn.CrossEntropyLoss(), target=None, device=None):
+#     model.eval()
+#     image_prime = None
+#     if device:
+#         image, model = image.to(device), model.to(device)
 
     # FGSM attack requires gradients w.r.t. the data
+    image = tensor.detach().clone()
+    print(1)
     image.requires_grad = True
 
     output = model(image)
@@ -38,5 +40,23 @@ def FGSMAttack(image, model, epsilons=0.05, loss=nn.CrossEntropyLoss(), target=N
     loss.backward()
     data_grad = image.grad
 
-    perturbed_data = perturb(data, eps, data_grad, target)
+    perturbed_data = perturb(image, eps, data_grad, target)
     return perturbed_data
+
+def untarget_fgsm(model, loss, image, labels, eps, device) :
+    
+    images = image.detach().clone().to(device)
+    labels = labels.to(device)
+    model = model.to(device)
+    
+    images.requires_grad = True
+            
+    outputs = model(images)
+    
+    model.zero_grad()
+    cost = loss(outputs, labels)
+    cost.backward()
+    
+    attack_images = images + eps*images.grad.sign()
+    
+    return attack_images

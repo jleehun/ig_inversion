@@ -31,11 +31,15 @@ import torchvision.models as models
 from torch.autograd import Variable
 
 import scipy.stats as stats
+from tqdm import tqdm
+
+from ig_pkg.algorithm.adversarial import FGSMAttack, untarget_fgsm
 
 IMAGENET_MEAN = [0.485, 0.456, 0.406]
 IMAGENET_STD  = [0.229, 0.224, 0.225]
 
 my_cmap=plt.cm.seismic(np.arange(plt.cm.seismic.N))
+import argparse
 
 # ================================
 # def write_npz(samples, path):
@@ -43,10 +47,14 @@ my_cmap=plt.cm.seismic(np.arange(plt.cm.seismic.N))
 #         np.save(path, samples)
 #     else:
 #         np.savez(path, **{str(key): value for key, value in enumerate(samples)}) # 배열 크기만큼 ['0', '1', '2' . ..]로 key값이 저장됨
-        
+
+from torchvision.models import resnet50, ResNet50_Weights
+
 def test():
-    model = models.resnet18(pretrained=False)
-    eval_mode = model.eval()
+#     model = models.resnet18(pretrained=False)
+
+    weights = ResNet50_Weights.IMAGENET1K_V1
+    eval_mode = resnet50(weights=weights).eval()
 
     data_path="/root/data/ILSVRC2012_val/"
 
@@ -55,16 +63,25 @@ def test():
 
     device = 'cuda:0'
 
-    baseline = torch.zeros((3, 224, 224))
-    attribution = []
-
-    for i, (inputs, labels) in enumerate(valid_dataloader):
-        attr = ig(eval_mode.to(device), inputs.squeeze(0), labels.item(), baseline, device=device)
+    baseline_zero = torch.zeros((3, 224, 224))
+    
+    attribution_zero = []
+    attribution_fgsm = []
+    
+    for i, (inputs, labels) in enumerate(tqdm(valid_dataloader)):
+        baseline_fgsm= untarget_fgsm(eval_mode, nn.CrossEntropyLoss(), inputs, labels, 0.05, device)
         
-        attribution.append(attr.detach().cpu())
+        attr_zero = ig(eval_mode.to(device), inputs.squeeze(0), labels.item(), baseline_zero, device=device)
+        
+        attr_fgsm = ig(eval_mode.to(device), inputs.squeeze(0), labels.item(), baseline_fgsm, device=device)
+        
+        attribution_zero.append(attr_zero.detach().cpu())
+        attribution_fgsm.append(attr_fgsm.detach().cpu())
 
-    output = torch.stack(attribution, dim = 0)
-    np.save('/root/data/results/ig_inversion/ig_zero_baseline.npy', output)
+    output1 = torch.stack(attribution_zero, dim = 0)
+    output2 = torch.stack(attribution_fgsm, dim = 0)
+    np.save('/root/data/results/ig_inversion/ig_zero_baseline.npy', output1)
+    np.save('/root/data/results/ig_inversion/ig_fgsm_baseline.npy', output2)
     
 #     return output
 
