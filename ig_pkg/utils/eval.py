@@ -25,7 +25,7 @@ fn = {
 }
 
 class Cifar10Evaluator():
-    def __init__(self, data_path, save_dir, debug=False):
+    def __init__(self, data_path, save_dir, method, debug=False):
         transform = T.Compose([
                         T.ToTensor(), 
                         T.Normalize(CIFAR10_STATS['mean'], CIFAR10_STATS['std'])
@@ -43,49 +43,50 @@ class Cifar10Evaluator():
             self.average_result_dict = {}
         
         self.debug = debug
+        self.method = method
         self.save()
     
-    def evaluate(self, attrs, model, measure, device='cuda:0', **kwargs):
-        print(f'cifar10_{kwargs["ratio"]}')
-        print(measure)
+    def evaluate(self, attrs, model, device, **kwargs):
+        print(f'cifar10_{self.method}_{kwargs["ratio"]}')
+
         """
         attribution evaluation function 
         fn : (input, label, attr, model) --> score 
         """
                 
-        self.sample_result_dict[f'morf_{kwargs["ratio"]}'] = []
-        self.sample_result_dict[f'lerf_{kwargs["ratio"]}'] = []
-        self.sample_result_dict[f'aopc_{kwargs["ratio"]}'] = []
-        self.sample_result_dict[f'lodds_{kwargs["ratio"]}'] = []
+        self.sample_result_dict[f'morf_{self.method}_{kwargs["ratio"]}'] = []
+        self.sample_result_dict[f'lerf_{self.method}_{kwargs["ratio"]}'] = []
+        self.sample_result_dict[f'aopc_{self.method}_{kwargs["ratio"]}'] = []
+        self.sample_result_dict[f'lodds_{self.method}_{kwargs["ratio"]}'] = []
         
         model = model.to(device)
         pbar = tqdm(range(len(self.valid_dataset)))
-        pbar.set_description(f" Evaluation [👾] | {model.__class__.__name__} | ")
+        pbar.set_description(f" Evaluation [👾] | {model.__class__.__name__} | {self.method} | {kwargs['ratio']}")
         for idx in pbar:
             input, label = self.valid_dataset[idx]
             input = input.to(device)
             attr = attrs[idx]
             
             score = morf(input, label, attr, model, device, **kwargs)
-            self.sample_result_dict[f'morf_{kwargs["ratio"]}'].append(score)
+            self.sample_result_dict[f'morf_{self.method}_{kwargs["ratio"]}'].append(score)
             
             score = lerf(input, label, attr, model, device, **kwargs)
-            self.sample_result_dict[f'lerf_{kwargs["ratio"]}'].append(score)
+            self.sample_result_dict[f'lerf_{self.method}_{kwargs["ratio"]}'].append(score)
             
             score = aopc(input, label, attr, model, device, **kwargs)
-            self.sample_result_dict[f'aopc_{kwargs["ratio"]}'].append(score)
+            self.sample_result_dict[f'aopc_{self.method}_{kwargs["ratio"]}'].append(score)
             
             score = lodds(input, label, attr, model, device, **kwargs)
-            self.sample_result_dict[f'lodds_{kwargs["ratio"]}'].append(score)
+            self.sample_result_dict[f'lodds_{self.method}_{kwargs["ratio"]}'].append(score)
             
             if self.debug:
                 if idx > 10:
                     break 
             
-        self.average_result_dict[f'morf_{kwargs["ratio"]}'] = np.mean(self.sample_result_dict[f'morf_{kwargs["ratio"]}'])
-        self.average_result_dict[f'lerf_{kwargs["ratio"]}'] = np.mean(self.sample_result_dict[f'lerf_{kwargs["ratio"]}'])
-        self.average_result_dict[f'aopc_{kwargs["ratio"]}'] = np.mean(self.sample_result_dict[f'aopc{kwargs["ratio"]}'])
-        self.average_result_dict[f'lodds_{kwargs["ratio"]}'] = np.mean(self.sample_result_dict[f'lodds_{kwargs["ratio"]}'])
+        self.average_result_dict[f'morf_{self.method}_{kwargs["ratio"]}'] = np.mean(self.sample_result_dict[f'morf_{self.method}_{kwargs["ratio"]}'])
+        self.average_result_dict[f'lerf_{self.method}_{kwargs["ratio"]}'] = np.mean(self.sample_result_dict[f'lerf_{self.method}_{kwargs["ratio"]}'])
+        self.average_result_dict[f'aopc_{self.method}_{kwargs["ratio"]}'] = np.mean(self.sample_result_dict[f'aopc_{self.method}_{kwargs["ratio"]}'])
+        self.average_result_dict[f'lodds_{self.method}_{kwargs["ratio"]}'] = np.mean(self.sample_result_dict[f'lodds_{self.method}_{kwargs["ratio"]}'])
         self.save()
         
     def save(self):        

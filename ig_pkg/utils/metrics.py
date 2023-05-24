@@ -5,7 +5,11 @@ import numpy as np
 
 
 def morf(input, label, attr, model, device, ratio, **kwargs):
+    # print(1)
+    # print(input.size())
     x = mask_MoRF(input, attr, ratio).unsqueeze(0)
+    # print(2)
+    # print(x.size())
     x = x.to(device)
     y_hat = model.forward(x).argmax(dim=-1)
     label = torch.tensor(label)
@@ -23,7 +27,7 @@ def lerf(input, label, attr, model, device, ratio, **kwargs):
 
 def aopc(input, label, attr, model, device, ratio, **kwargs):
     # input 3, 224, 224 / attr 224, 224
-        
+    input = input.to(device)    
     logit = model.forward(input.unsqueeze(0))    
     score_orig = nn.functional.softmax(logit, dim = -1)    
     prob_orig = score_orig[0, label].item()
@@ -39,6 +43,7 @@ def aopc(input, label, attr, model, device, ratio, **kwargs):
 
 def lodds(input, label, attr, model, device, ratio, **kwargs):
         
+    input = input.to(device)    
     logit = model.forward(input.unsqueeze(0))    
     score_orig = nn.functional.softmax(logit, dim = -1)    
     prob_orig = score_orig[0, label].item()

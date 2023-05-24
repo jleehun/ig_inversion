@@ -2,6 +2,34 @@ import torch
 from torch.autograd import Variable
 
 
+def get_gradient(model, x, y, device):
+    temp = Variable(x, requires_grad=True).to(device)
+    temp = temp.unsqueeze(0)
+    temp.retain_grad()
+    model.zero_grad()
+
+    output = model(temp)
+    score = torch.softmax(output, dim=-1)
+    class_score = torch.FloatTensor(temp.size(0), output.size()[-1]).zero_().to(device).type(temp.dtype)
+    class_score[:,y] = score[:,y]
+    output.backward(gradient=class_score)
+
+    gradient = temp.grad
+    return gradient
+
+def image_gradient_interpolation(model, x, y, M, device):
+    model = model.to(device)
+    x = x.to(device)
+    
+    interp = []
+    interp.append(x)
+    
+    for i in range(M):    
+        grad = get_gradient(model, x, y, device)
+        x = x - grad.squeeze(0)        
+        interp.append(x)
+    interp = torch.stack(interp)
+    return interp
 
 def linear_interpolation(x, M, baseline):
     lst = [] 

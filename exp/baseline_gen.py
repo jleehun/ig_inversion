@@ -1,3 +1,5 @@
+import random
+import os
 import torch
 import torchvision
 import numpy as np 
@@ -13,7 +15,7 @@ parser =argparse.ArgumentParser()
 parser.add_argument("--data-path",  required=True)
 # parser.add_argument("--attr-path",  required=True)
 parser.add_argument("--model-path", required=True)
-parser.add_argument("--measure",  required=True)
+# parser.add_argument("--measure",  required=True)
 parser.add_argument("--debug", type=lambda x: bool(strtobool(x)), default=False, nargs="?", const=True,)
 
 # -----------------------------
@@ -32,7 +34,7 @@ def seed_everything(seed: int = 42):
     
 seed_everything(42)
 
-device = 'cuda:0'
+device = 'cuda:7'
 
 # call dataset, dataloader
 import torchvision.transforms as T
@@ -51,7 +53,7 @@ valid_dataset = torchvision.datasets.CIFAR10(root=args.data_path, train=False, t
 classifier = torch.load(args.model_path,  map_location='cpu')
 
 # zero baseline
-baseline = torch.zeros_like(valid_dataset[0][0]).to(device)
+# baseline = torch.zeros_like(valid_dataset[0][0]).to(device)
 
 pbar = tqdm(range(len(valid_dataset)))
 pbar.set_description(f" Evaluation [👾] | generating attribution zero | ")
@@ -61,11 +63,13 @@ model = classifier.eval().to(device)
 interpolation = []
 attribution = []
 
+
 for idx in pbar:
     input, label = valid_dataset[idx]
     input = input.to(device)
-    interp = linear_interpolation(input, 24, baseline).to(device) # tensor
-    attrib = integrated_gradient(model, input, label, baseline, interp, device='cuda:0') # tensor
+    interp = image_gradient_interpolation(model, input, label, 10, device).to(device)
+    baseline = interp[-1]
+    attrib = integrated_gradient(model, input, label, baseline, interp, device='cuda:7') # tensor
     
     interpolation.append(interp.detach().cpu())
     attribution.append(attrib.detach().cpu())
@@ -77,8 +81,10 @@ for idx in pbar:
 interpolation = torch.stack(interpolation)
 attribution = torch.stack(attribution)
 
-np.save('/root/results/cifar10/interpolation/image_linear_zero_interpolation.npy', interpolation.numpy())
-np.save('/root/results/cifar10/attribution/image_linear_zero_attribution.npy', attribution.numpy())
+np.save('/home/dhlee/results/cifar10/image_gradient_interpolation.npy', interpolation.numpy())
+np.save('/home/dhlee/results/cifar10/image_gradient_attribution.npy', attribution.numpy())
+# np.save('/home/dhlee/code/ig_inversion/results/cifar10/image_gradient_interpolation.npy', interpolation.numpy())
+# np.save('/home/dhlee/code/ig_inversion/results/cifar10/image_gradient_attribution.npy', attribution.numpy())
 
 
 
