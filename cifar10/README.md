@@ -1,0 +1,4 @@
+# Benchmarking MNIST Autoencoders
+
+
+
