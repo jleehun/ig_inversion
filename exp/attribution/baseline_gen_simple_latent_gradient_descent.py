@@ -67,7 +67,11 @@ model = classifier.eval().to(args.device)
 interpolation_z = []
 interpolation = []
 attribution = []
+<<<<<<< Updated upstream
 
+=======
+print("ascent")
+>>>>>>> Stashed changes
 for idx in pbar:
     input, label = valid_dataset[idx]
     input = input.to(args.device)
@@ -82,7 +86,11 @@ for idx in pbar:
     grad = AutoencoderExaminer.get_classifier_latent_direction(ae, model, z, label)
     
     for _ in range(24):        
+<<<<<<< Updated upstream
         z -= grad * 100
+=======
+        z += grad * 100
+>>>>>>> Stashed changes
         input_hat = AutoencoderExaminer.reconstruct_latent(ae, z)
         
         interp_z.append(z)
@@ -108,9 +116,15 @@ attribution = torch.stack(attribution)
 
 print('please')
 
+<<<<<<< Updated upstream
 np.save('/home/dhlee/results/cifar10/latent_simple_gradient_descent_interpolation_z.npy', interpolation_z.numpy())
 np.save('/home/dhlee/results/cifar10/latent_simple_gradient_descent_interpolation.npy', interpolation.numpy())
 np.save('/home/dhlee/results/cifar10/latent_simple_gradient_descent_attribution.npy', attribution.numpy())
+=======
+np.save('/root/results/cifar10/latent_simple_gradient_ascent_interpolation_z.npy', interpolation_z.numpy())
+np.save('/root/results/cifar10/latent_simple_gradient_ascent_interpolation.npy', interpolation.numpy())
+np.save('/root/results/cifar10/latent_simple_gradient_ascent_attribution.npy', attribution.numpy())
+>>>>>>> Stashed changes
 
 # np.save('/home/dhlee/results/cifar10/latent_linear_interpolation_z.npy', interpolation_z.numpy())
 # np.save('/home/dhlee/results/cifar10/latent_linear_interpolation.npy', interpolation.numpy())
