@@ -78,12 +78,10 @@ for idx in pbar:
     
     interp = [input]
     interp_z = [z]
-    
-    # interp.append(input) # 3, 32, 32
-    # interp_z.append(z) # 1, 512, 2, 2
+        
+    grad = AutoencoderExaminer.get_classifier_latent_direction(ae, model, z, label)
     
     for _ in range(24):        
-        grad = AutoencoderExaminer.get_classifier_latent_direction(ae, model, z, label)
         z -= grad * 100
         input_hat = AutoencoderExaminer.reconstruct_latent(ae, z)
         
@@ -110,9 +108,9 @@ attribution = torch.stack(attribution)
 
 print('please')
 
-np.save('/home/dhlee/results/cifar10/latent_gradient_descent_interpolation_z.npy', interpolation_z.numpy())
-np.save('/home/dhlee/results/cifar10/latent_gradient_descent_interpolation.npy', interpolation.numpy())
-np.save('/home/dhlee/results/cifar10/latent_gradient_descent_attribution.npy', attribution.numpy())
+np.save('/home/dhlee/results/cifar10/latent_simple_gradient_descent_interpolation_z.npy', interpolation_z.numpy())
+np.save('/home/dhlee/results/cifar10/latent_simple_gradient_descent_interpolation.npy', interpolation.numpy())
+np.save('/home/dhlee/results/cifar10/latent_simple_gradient_descent_attribution.npy', attribution.numpy())
 
 # np.save('/home/dhlee/results/cifar10/latent_linear_interpolation_z.npy', interpolation_z.numpy())
 # np.save('/home/dhlee/results/cifar10/latent_linear_interpolation.npy', interpolation.numpy())

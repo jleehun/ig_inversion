@@ -42,14 +42,17 @@ attr_path  = {
     'zero': '/home/dhlee/results/cifar10/image_linear_zero_attribution.npy',
     'expected': '/home/dhlee/results/cifar10/image_linear_expected_attribution.npy',
     
-    'image_gradient_descent': '/home/dhlee/results/cifar10/image_gradient_descent_attribution.npy', # descent
-    
     'latent_linear': '/home/dhlee/results/cifar10/latent_linear_attribution.npy',
     
-    'image_gradient_ascent': '/home/dhlee/results/cifar10/image_gradient_ascent_attribution.npy',
-    
+    'image_gradient_descent': '/home/dhlee/results/cifar10/image_gradient_descent_attribution.npy', # descent
+    'image_gradient_ascent': '/home/dhlee/results/cifar10/image_gradient_ascent_attribution.npy',            
     'latent_gradient_descent': '/home/dhlee/results/cifar10/latent_gradient_descent_attribution.npy',
     'latent_gradient_ascent': '/home/dhlee/results/cifar10/latent_gradient_ascent_attribution.npy',
+    
+    'image_simple_gradient_descent': '/home/dhlee/results/cifar10/image_simple_gradient_descent_attribution.npy', # descent
+    'image_simple_gradient_ascent': '/home/dhlee/results/cifar10/image_simple_gradient_ascent_attribution.npy',            
+    'latent_simple_gradient_descent': '/home/dhlee/results/cifar10/latent_simple_gradient_descent_attribution.npy',
+    'latent_simple_gradient_ascent': '/home/dhlee/results/cifar10/latent_simple_gradient_ascent_attribution.npy',
 }[args.method]
 
 attrs = np.load(attr_path)

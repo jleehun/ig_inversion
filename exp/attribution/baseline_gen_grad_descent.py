@@ -92,8 +92,8 @@ for idx in pbar:
 interpolation = torch.stack(interpolation)
 attribution = torch.stack(attribution)
 
-np.save('/home/dhlee/code/ig_inversion/results/cifar10/image_simple_gradient_descent_interpolation.npy', interpolation.numpy())
-np.save('/home/dhlee/code/ig_inversion/results/cifar10/image_simple_gradient_descent_attribution.npy', attribution.numpy())
+np.save('/home/dhlee/results/cifar10/image_simple_gradient_descent_interpolation.npy', interpolation.numpy())
+np.save('/home/dhlee/results/cifar10/image_simple_gradient_descent_attribution.npy', attribution.numpy())
 
 # np.save('/home/dhlee/code/ig_inversion/results/cifar10/image_simple_gradient_descent_interpolation.npy', interpolation.numpy())
 # np.save('/home/dhlee/code/ig_inversion/results/cifar10/image_simple_gradient_descent_attribution.npy', attribution.numpy())
