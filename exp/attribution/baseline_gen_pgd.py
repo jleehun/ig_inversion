@@ -17,7 +17,7 @@ parser.add_argument("--data-path",  required=True)
 # parser.add_argument("--attr-path",  required=True)
 parser.add_argument("--model-path", required=True)
 parser.add_argument("--device",  required=True)
-parser.add_argument("--measure",  required=True)
+# parser.add_argument("--measure",  required=True)
 parser.add_argument("--debug", type=lambda x: bool(strtobool(x)), default=False, nargs="?", const=True,)
 
 # -----------------------------
