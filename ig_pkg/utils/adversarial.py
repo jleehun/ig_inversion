@@ -34,7 +34,7 @@ def pgd_attack(model, images, labels, device, eps=0.3, alpha=2/255, iters=24):
         images = torch.clamp(ori_images + eta, min=0, max=1).detach_()
         
         interp.append(images.squeeze(0).clone().detach().cpu())
-    print(1)
+    # print(1)
     interp = torch.stack(interp)
     return interp
 
