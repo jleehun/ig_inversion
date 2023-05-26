@@ -68,14 +68,23 @@ attribution = []
 for idx in pbar:
     input, label = valid_dataset[idx]
     input = input.to(args.device)
+
+    interp = [] # 3,32,32
+    grad = get_gradient(model, input, label, args.device).squeeze(0)
+
+    for i in range(25):
+        interp.append(input)        
+        input -= grad
     
-    interp = image_gradient_interpolation(model, input, label, 24, args.device).to(args.device)
+    interp = torch.stack(interp).to(args.device) # 25, 3, 32, 32
+    input = interp[0]
     baseline = interp[-1]
+    
     attrib = integrated_gradient(model, input, label, baseline, interp, args.device) # tensor
     
     interpolation.append(interp.detach().cpu())
     attribution.append(attrib.detach().cpu())
-    
+
     if args.debug:
         if idx > 10:
             break
@@ -83,9 +92,14 @@ for idx in pbar:
 interpolation = torch.stack(interpolation)
 attribution = torch.stack(attribution)
 
-np.save('/home/dhlee/results/cifar10/image_gradient_descent_interpolation.npy', interpolation.numpy())
-np.save('/home/dhlee/results/cifar10/image_gradient_descent_attribution.npy', attribution.numpy())
+np.save('/home/dhlee/code/ig_inversion/results/cifar10/image_simple_gradient_descent_interpolation.npy', interpolation.numpy())
+np.save('/home/dhlee/code/ig_inversion/results/cifar10/image_simple_gradient_descent_attribution.npy', attribution.numpy())
+
+# np.save('/home/dhlee/code/ig_inversion/results/cifar10/image_simple_gradient_descent_interpolation.npy', interpolation.numpy())
+# np.save('/home/dhlee/code/ig_inversion/results/cifar10/image_simple_gradient_descent_attribution.npy', attribution.numpy())
 
 
-
+    # interp = image_gradient_interpolation(model, input, label, 24, args.device).to(args.device)
+    # baseline = interp[-1]
+    # attrib = integrated_gradient(model, input, label, baseline, interp, args.device) # tensor
     
