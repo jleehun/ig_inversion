@@ -56,8 +56,8 @@ class Cifar10Evaluator():
                 
         self.sample_result_dict[f'morf_{self.method}_{kwargs["ratio"]}'] = []
         self.sample_result_dict[f'lerf_{self.method}_{kwargs["ratio"]}'] = []
-        self.sample_result_dict[f'aopc_{self.method}_{kwargs["ratio"]}'] = []
         self.sample_result_dict[f'lodds_{self.method}_{kwargs["ratio"]}'] = []
+        self.sample_result_dict[f'aopc_{self.method}_{kwargs["ratio"]}'] = []
         
         model = model.to(device)
         pbar = tqdm(range(len(self.valid_dataset)))
@@ -66,15 +66,19 @@ class Cifar10Evaluator():
             input, label = self.valid_dataset[idx]
             input = input.to(device)
             attr = attrs[idx]
-            
+            # print(1)
+            # print(attr.shape)
             score = morf(input, label, attr, model, device, **kwargs)
             self.sample_result_dict[f'morf_{self.method}_{kwargs["ratio"]}'].append(score)
+            # print(2)
             
             score = lerf(input, label, attr, model, device, **kwargs)
             self.sample_result_dict[f'lerf_{self.method}_{kwargs["ratio"]}'].append(score)
+            # print(3)
             
             score = aopc(input, label, attr, model, device, **kwargs)
             self.sample_result_dict[f'aopc_{self.method}_{kwargs["ratio"]}'].append(score)
+            # print(4)
             
             score = lodds(input, label, attr, model, device, **kwargs)
             self.sample_result_dict[f'lodds_{self.method}_{kwargs["ratio"]}'].append(score)

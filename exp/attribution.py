@@ -16,6 +16,7 @@ parser.add_argument("--data-path",  required=True)
 parser.add_argument("--method", required=True)
 # parser.add_argument("--attr-path",  required=True)
 parser.add_argument("--model-path", required=True)
+parser.add_argument("--device", required=True)
 parser.add_argument("--debug", type=lambda x: bool(strtobool(x)), default=False, nargs="?", const=True,)
 
 # -----------------------------
@@ -34,19 +35,31 @@ def seed_everything(seed: int = 42):
     
 seed_everything(42)
 
-device = 'cuda:5'
+# device = args.device
+# print(device)
 
 attr_path  = {
     'zero': '/home/dhlee/results/cifar10/image_linear_zero_attribution.npy',
     'expected': '/home/dhlee/results/cifar10/image_linear_expected_attribution.npy',
+    
+    'image_gradient_descent': '/home/dhlee/results/cifar10/image_gradient_descent_attribution.npy', # descent
+    
+    'latent_linear': '/home/dhlee/results/cifar10/latent_linear_attribution.npy',
+    
+    'image_gradient_ascent': '/home/dhlee/results/cifar10/image_gradient_ascent_attribution.npy',
+    
+    'latent_gradient_descent': '/home/dhlee/results/cifar10/latent_gradient_descent_attribution.npy',
+    'latent_gradient_ascent': '/home/dhlee/results/cifar10/latent_gradient_ascent_attribution.npy',
 }[args.method]
 
 attrs = np.load(attr_path)
-classifier = torch.load(args.model_path,  map_location='cpu').eval().to(device)
+classifier = torch.load(args.model_path,  map_location='cpu').eval().to(args.device)
 
 evaluator = Cifar10Evaluator(args.data_path, '/home/dhlee/code/ig_inversion/results/', args.method, debug=args.debug)
 
-evaluator.evaluate(attrs, classifier, device='cuda:5', **vars(args))
+evaluator.evaluate(attrs, classifier, **vars(args))
+
+
 
 
 

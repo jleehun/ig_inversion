@@ -13,6 +13,7 @@ from ig_pkg.utils.attribution import *
 
 parser =argparse.ArgumentParser()
 parser.add_argument("--data-path",  required=True)
+parser.add_argument("--device",  required=True)
 # parser.add_argument("--attr-path",  required=True)
 parser.add_argument("--model-path", required=True)
 # parser.add_argument("--measure",  required=True)
@@ -34,7 +35,7 @@ def seed_everything(seed: int = 42):
     
 seed_everything(42)
 
-device = 'cuda:7'
+torch.backends.cudnn.enabled = False
 
 # call dataset, dataloader
 import torchvision.transforms as T
@@ -58,7 +59,7 @@ classifier = torch.load(args.model_path,  map_location='cpu')
 pbar = tqdm(range(len(valid_dataset)))
 pbar.set_description(f" Evaluation [👾] | generating attribution zero | ")
 
-model = classifier.eval().to(device)
+model = classifier.eval().to(args.device)
 
 interpolation = []
 attribution = []
@@ -66,10 +67,11 @@ attribution = []
 
 for idx in pbar:
     input, label = valid_dataset[idx]
-    input = input.to(device)
-    interp = image_gradient_interpolation(model, input, label, 10, device).to(device)
+    input = input.to(args.device)
+    
+    interp = image_gradient_interpolation(model, input, label, 24, args.device).to(args.device)
     baseline = interp[-1]
-    attrib = integrated_gradient(model, input, label, baseline, interp, device='cuda:7') # tensor
+    attrib = integrated_gradient(model, input, label, baseline, interp, args.device) # tensor
     
     interpolation.append(interp.detach().cpu())
     attribution.append(attrib.detach().cpu())
@@ -81,10 +83,8 @@ for idx in pbar:
 interpolation = torch.stack(interpolation)
 attribution = torch.stack(attribution)
 
-np.save('/home/dhlee/results/cifar10/image_gradient_interpolation.npy', interpolation.numpy())
-np.save('/home/dhlee/results/cifar10/image_gradient_attribution.npy', attribution.numpy())
-# np.save('/home/dhlee/code/ig_inversion/results/cifar10/image_gradient_interpolation.npy', interpolation.numpy())
-# np.save('/home/dhlee/code/ig_inversion/results/cifar10/image_gradient_attribution.npy', attribution.numpy())
+np.save('/home/dhlee/results/cifar10/image_gradient_descent_interpolation.npy', interpolation.numpy())
+np.save('/home/dhlee/results/cifar10/image_gradient_descent_attribution.npy', attribution.numpy())
 
 
 

@@ -17,7 +17,21 @@ def get_gradient(model, x, y, device):
     gradient = temp.grad
     return gradient
 
-def image_gradient_interpolation(model, x, y, M, device):
+def image_gradient_ascent_interpolation(model, x, y, M, device): # last - baseline
+    model = model.to(device)
+    x = x.to(device)
+    
+    interp = []
+    interp.append(x)
+    
+    for i in range(M):    
+        grad = get_gradient(model, x, y, device)
+        x = x + grad.squeeze(0)        
+        interp.append(x)
+    interp = torch.stack(interp)
+    return interp
+
+def image_gradient_interpolation(model, x, y, M, device): # last - baseline
     model = model.to(device)
     x = x.to(device)
     
@@ -31,7 +45,7 @@ def image_gradient_interpolation(model, x, y, M, device):
     interp = torch.stack(interp)
     return interp
 
-def linear_interpolation(x, M, baseline):
+def linear_interpolation(x, M, baseline): # first baseline # last image
     lst = [] 
     for i in range(M+1):
         alpha = float(i/M)  
@@ -39,7 +53,7 @@ def linear_interpolation(x, M, baseline):
         lst.append(interpolated.clone())
     return torch.stack(lst)
 
-def integrated_gradient(model, x, y, baseline, interpolation, device='cuda:0', **kwrags):
+def integrated_gradient(model, x, y, baseline, interpolation, device, **kwrags): 
 #     x = x.to(device)
 #     baseline = baseline.to(device)
 #     interpolation = interpolation.to(device)
@@ -58,5 +72,7 @@ def integrated_gradient(model, x, y, baseline, interpolation, device='cuda:0', *
     gradient = (gradient[:-1] + gradient[1:]) / 2.0
     output = (x - baseline) * gradient.mean(axis=0)
     output = output.mean(dim=0) # RGB mean
+    # print(5, output.shape)
     output = output.abs()
+    # print(6, output.shape)
     return output
