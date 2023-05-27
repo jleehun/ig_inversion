@@ -67,11 +67,8 @@ model = classifier.eval().to(args.device)
 interpolation_z = []
 interpolation = []
 attribution = []
-<<<<<<< Updated upstream
 
-=======
 print("ascent")
->>>>>>> Stashed changes
 for idx in pbar:
     input, label = valid_dataset[idx]
     input = input.to(args.device)
@@ -86,11 +83,8 @@ for idx in pbar:
     grad = AutoencoderExaminer.get_classifier_latent_direction(ae, model, z, label)
     
     for _ in range(24):        
-<<<<<<< Updated upstream
-        z -= grad * 100
-=======
-        z += grad * 100
->>>>>>> Stashed changes
+        # z -= grad * 100
+        # z += grad * 100
         input_hat = AutoencoderExaminer.reconstruct_latent(ae, z)
         
         interp_z.append(z)

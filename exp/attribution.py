@@ -42,8 +42,7 @@ attr_path  = {
     'zero': '/home/dhlee/results/cifar10/image_linear_zero_attribution.npy',
     'expected': '/home/dhlee/results/cifar10/image_linear_expected_attribution.npy',
     
-    'latent_linear': '/home/dhlee/results/cifar10/latent_linear_attribution.npy',
-    
+    'latent_linear': '/home/dhlee/results/cifar10/latent_linear_attribution.npy',    
     'image_gradient_descent': '/home/dhlee/results/cifar10/image_gradient_descent_attribution.npy', # descent
     'image_gradient_ascent': '/home/dhlee/results/cifar10/image_gradient_ascent_attribution.npy',            
     'latent_gradient_descent': '/home/dhlee/results/cifar10/latent_gradient_descent_attribution.npy',
@@ -57,6 +56,25 @@ attr_path  = {
     'image_simple_fgsm': '/home/dhlee/results/cifar10/image_simple_fgsm_attribution.npy',
     'image_fgsm': '/home/dhlee/results/cifar10/image_fgsm_attribution.npy',
     'image_pgd': '/home/dhlee/results/cifar10/image_pgd_attribution.npy',
+    'image_cw': '/home/dhlee/results/cifar10/image_cw_attribution.npy',
+
+    'linear_latent_linear': '/home/dhlee/results/cifar10/latent_linear_interpolation_linear_attribution.npy',    
+    'linear_image_gradient_descent': '/home/dhlee/results/cifar10/image_gradient_descent_interpolation_linear_attribution.npy', # descent
+    'linear_image_gradient_ascent': '/home/dhlee/results/cifar10/image_gradient_ascent_interpolation_linear_attribution.npy',            
+    'linear_latent_gradient_descent': '/home/dhlee/results/cifar10/latent_gradient_descent_interpolation_linear_attribution.npy',
+    'linear_latent_gradient_ascent': '/home/dhlee/results/cifar10/latent_gradient_ascent_interpolation_linear_attribution.npy',
+    
+    'linear_image_simple_gradient_descent': '/home/dhlee/results/cifar10/image_simple_gradient_descent_interpolation_linear_attribution.npy', # descent
+    'linear_image_simple_gradient_ascent': '/home/dhlee/results/cifar10/image_simple_gradient_ascent_interpolation_linear_attribution.npy',            
+    'linear_latent_simple_gradient_descent': '/home/dhlee/results/cifar10/latent_simple_gradient_descent_interpolation_linear_attribution.npy',
+    'linear_latent_simple_gradient_ascent': '/home/dhlee/results/cifar10/latent_simple_gradient_ascent_interpolation_linear_attribution.npy',
+    
+    'linear_image_simple_fgsm': '/home/dhlee/results/cifar10/image_simple_fgsm_interpolation_linear_attribution.npy',
+    'linear_image_fgsm': '/home/dhlee/results/cifar10/image_fgsm_interpolation_linear_attribution.npy',
+    'linear_image_pgd': '/home/dhlee/results/cifar10/image_pgd_interpolation_linear_attribution.npy',
+    'linear_image_cw': '/home/dhlee/results/cifar10/image_interpolation_linear_cw_attribution.npy',
+    
+    
 }[args.method]
 
 attrs = np.load(attr_path)
