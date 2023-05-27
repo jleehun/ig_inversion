@@ -90,10 +90,14 @@ attribution = torch.stack(attribution)
 
 print('please')
 
+np.save(f'/root/results/cifar10/image_{args.measure}_interpolation.npy', interpolation.numpy())
+np.save(f'/root/results/cifar10/image_{args.measure}_attribution.npy', attribution.numpy())
+
+
 # np.save(f'/home/dhlee/results/cifar10/image_{args.measure}_interpolation.npy', interpolation.numpy())
 # np.save(f'/home/dhlee/results/cifar10/image_{args.measure}_attribution.npy', attribution.numpy())
-np.save(f'/home/dhlee/code/ig_inversion/results/cifar10/image_{args.measure}_interpolation.npy', interpolation.numpy())
-np.save(f'/home/dhlee/code/ig_inversion/results/cifar10/image_{args.measure}_attribution.npy', attribution.numpy())
+# np.save(f'/home/dhlee/code/ig_inversion/results/cifar10/image_{args.measure}_interpolation.npy', interpolation.numpy())
+# np.save(f'/home/dhlee/code/ig_inversion/results/cifar10/image_{args.measure}_attribution.npy', attribution.numpy())
 
 # np.save('/home/dhlee/code/ig_inversion/results/cifar10/image_pgd_interpolation.npy', interpolation.numpy())
 # np.save('/home/dhlee/code/ig_inversion/results/cifar10/image_pgd_attribution.npy', attribution.numpy())
