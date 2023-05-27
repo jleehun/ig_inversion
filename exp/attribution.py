@@ -53,6 +53,10 @@ attr_path  = {
     'image_simple_gradient_ascent': '/home/dhlee/results/cifar10/image_simple_gradient_ascent_attribution.npy',            
     'latent_simple_gradient_descent': '/home/dhlee/results/cifar10/latent_simple_gradient_descent_attribution.npy',
     'latent_simple_gradient_ascent': '/home/dhlee/results/cifar10/latent_simple_gradient_ascent_attribution.npy',
+    
+    'image_simple_fgsm': '/home/dhlee/results/cifar10/image_simple_fgsm_attribution.npy',
+    'image_fgsm': '/home/dhlee/results/cifar10/image_fgsm_attribution.npy',
+    'image_pgd': '/home/dhlee/results/cifar10/image_pgd_attribution.npy',
 }[args.method]
 
 attrs = np.load(attr_path)
