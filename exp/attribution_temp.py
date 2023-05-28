@@ -80,7 +80,7 @@ attr_path  = {
 attrs = np.load(attr_path)
 classifier = torch.load(args.model_path,  map_location='cpu').eval().to(args.device)
 
-evaluator = Cifar10Evaluator(args.data_path, '/home/dhlee/code/ig_inversion/results/', args.method, debug=args.debug)
+evaluator = Cifar10Evaluator(args.data_path, '/home/dhlee/code/ig_inversion/results/temp/', args.method, debug=args.debug)
 
 evaluator.evaluate(attrs, classifier, **vars(args))
 
