@@ -12,17 +12,18 @@ from ig_pkg.utils.metrics import * #morf, lerf,
 from ig_pkg.utils.attribution import *
 
 parser =argparse.ArgumentParser()
-parser.add_argument("--data-path",  required=True)
+parser.add_argument("--interp-path",  required=True)
 # parser.add_argument("--attr-path",  required=True)
 parser.add_argument("--model-path", required=True)
 parser.add_argument("--type",  required=True, type=int)
 parser.add_argument("--device",  required=True)
 parser.add_argument("--debug", type=lambda x: bool(strtobool(x)), default=False, nargs="?", const=True,)
 
-# -----------------------------
-
 args = parser.parse_args()
 # print(args)
+
+interp = torch.from_numpy(np.load(args.interp_path))
+
 
 def seed_everything(seed: int = 42):
     random.seed(seed)
@@ -99,3 +100,10 @@ np.save(f'/root/data/case/image_flat_{args.type}_linear_attribution.npy', attrib
 
 print('finish')
 
+
+
+
+for i in range(25):
+    ax=next(axes_flat)
+    ax.imshow(convert_to_img(interp[temp[i]][-1]))
+    

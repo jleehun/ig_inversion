@@ -14,7 +14,7 @@ from ig_pkg.utils.attribution import *
 parser =argparse.ArgumentParser()
 parser.add_argument("--data-path",  required=True)
 # parser.add_argument("--attr-path",  required=True)
-parser.add_argument("--model-path", required=True)
+# parser.add_argument("--model-path", required=True)
 parser.add_argument("--type",  required=True, type=int)
 parser.add_argument("--device",  required=True)
 parser.add_argument("--debug", type=lambda x: bool(strtobool(x)), default=False, nargs="?", const=True,)
@@ -37,33 +37,57 @@ seed_everything(42)
 
 # call dataset, dataloader
 import torchvision.transforms as T
-CIFAR10_STATS = {
-    'mean' : [0.4914, 0.4822, 0.4465],
-    'std' : [0.2023, 0.1994, 0.2010]
-}
+MNIST_MEAN = [0.1307]
+MNIST_STD  = [0.3081] 
 
 transform = T.Compose([
                 T.ToTensor(), 
-                T.Normalize(CIFAR10_STATS['mean'], CIFAR10_STATS['std'])
+                T.Normalize(MNIST_MEAN, MNIST_STD)
             ])
 
-valid_dataset = torchvision.datasets.CIFAR10(root=args.data_path, train=False, transform=transform)
+# valid_dataset = torchvision.datasets.CIFAR10(root=args.data_path, train=False, transform=transform)
+train_data = torchvision.datasets.MNIST(root = args.data_path,
+                            train=True,
+                            transform=T.Compose([T.ToTensor(), T.Normalize(mean = MNIST_MEAN, std = MNIST_STD)]),
+)
 
-classifier = torch.load(args.model_path, map_location='cpu')
+# call classifier
 
-# zero baseline
-# baseline = torch.zeros_like(valid_dataset[0][0]).to(device)
-# baseline = torch.load('/data8/donghun/cifar10/tensor.pt')
-baseline = torch.load('/root/tensor.pt', map_location='cpu')
+import torch 
+from ebm_pkg.models import get_model
+from ebm_pkg.datasets import CIFAR10_MEAN, CIFAR10_STD, MNIST_MEAN, MNIST_STD
+
+path = f"/home/dhlee/code/paper_code_exercise/prev___ebm_classification/results/train/mnist/baseline/seed_0"
+
+configs = {
+    "cnn" : (10, 'relu' , 256, None), 
+}
+out_features, activation, cnn_dim, last_avg_kernel_size = configs['cnn']
+model = get_model('cnn', 
+                in_channels=1,
+                out_features=out_features,
+                activation=activation,
+                cnn_dim=cnn_dim,
+                dropout_p = 0.5,
+                last_avg_kernel_size=last_avg_kernel_size)
+model.load_state_dict(torch.load(f"{path}/model_best.pt", map_location='cpu'))
+
+
+#  =======================================
+
+# call baseline
+
 baseline = torch.load('/data8/donghun/cifar10/tensor.pt', map_location='cpu')
-print(args.type)
-temp = baseline[args.type]
-# baseline = baseline[args.type].to(args.device)
+temp = baseline[args.type][0]
+temp = T.Resize(28)(temp.unsqueeze(0))
 
-pbar = tqdm(range(len(valid_dataset)))
+#==========================================
+
+
+pbar = tqdm(range(len(train_data)))
 pbar.set_description(f" Generating [👾] | generating attribution | ")
 
-model = classifier.eval().to(args.device)
+model = model.eval().to(args.device)
 
 interpolation = []
 attribution = []
@@ -72,7 +96,7 @@ for idx in pbar:
     
     baseline = temp.clone().detach().to(args.device)
     
-    input, label = valid_dataset[idx]
+    input, label = train_data[idx]
     input = input.to(args.device)
     interp = linear_interpolation(input, 24, baseline).to(args.device) # tensor
     attrib = integrated_gradient(model, input, label, baseline, interp, args.device) # tensor
@@ -91,11 +115,12 @@ print('please')
 
 # np.save(f'/home/dhlee/code/ig_inversion/results/cifar10/image_flat_{args.type}_linear_interpolation.npy', interpolation.numpy())
 # np.save(f'/home/dhlee/code/ig_inversion/results/cifar10/image_flat_{args.type}_linear_attribution.npy', attribution.numpy())
-# np.save(f'/home/dhlee/results/cifar10/image_flat_{args.type}_linear_interpolation.npy', interpolation.numpy())
-# np.save(f'/home/dhlee/results/cifar10/image_flat_{args.type}_linear_attribution.npy', attribution.numpy())
 
-np.save(f'/root/data/case/image_flat_{args.type}_linear_interpolation.npy', interpolation.numpy())
-np.save(f'/root/data/case/image_flat_{args.type}_linear_attribution.npy', attribution.numpy())
+np.save(f'/home/dhlee/results/mnist/linear_{args.type}_interpolation.npy', interpolation.numpy())
+np.save(f'/home/dhlee/results/mnist/linear_{args.type}_attribution.npy', attribution.numpy())
+
+# np.save(f'/root/data/case/image_flat_{args.type}_linear_interpolation.npy', interpolation.numpy())
+# np.save(f'/root/data/case/image_flat_{args.type}_linear_attribution.npy', attribution.numpy())
 
 print('finish')
 

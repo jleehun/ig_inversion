@@ -3,6 +3,27 @@ import torch
 import torch.nn as nn
 import numpy as np
 
+def mnist_one_stop(input, label, attr, model, device, ratio, **kwargs):
+    x = input.to(device)    
+    label = torch.tensor(label)
+    
+    logit = model.forward(x.unsqueeze(0))    
+    score_orig = nn.functional.softmax(logit, dim = -1)    
+    prob_orig = score_orig[0, label].item()
+        
+    x_hat = mnist_mask_MoRF(input, attr, ratio).unsqueeze(0)
+    x_hat = x_hat.to(device)
+    logit_new = model(x_hat)
+    score_new = nn.functional.softmax(logit_new, dim =-1)
+    prob_new = score_new[0, label].item()
+    
+    # y_hat = model.forward(x).argmax(dim=-1)
+    y_hat = torch.argmax(logit_new, dim=-1).item()
+    
+    morf = (y_hat == label).sum().item()
+    aopc = float(prob_orig - prob_new)  
+    
+    return  morf, aopc, y_hat
 
 def morf(input, label, attr, model, device, ratio, **kwargs):
     x = mask_MoRF(input, attr, ratio).unsqueeze(0)
@@ -51,6 +72,17 @@ def lodds(input, label, attr, model, device, ratio, **kwargs):
     
     return metric_lodds
 # ------------------------------------------------------------------------
+
+def mnist_mask_MoRF(input, attr, ratio):
+    x = input.detach().clone()
+    original_size = x.size() 
+    x = x.reshape(1, -1) 
+    attr = torch.tensor(attr).flatten() 
+    v, index = torch.sort(attr, descending=True, dim=0)    
+    index = index[:int(x.size(1)*ratio)]
+    x[:, index] = 0.0 
+    x = x.reshape(*original_size)
+    return x 
 
 def mask_MoRF(input, attr, ratio):
     x = input.detach().clone()
