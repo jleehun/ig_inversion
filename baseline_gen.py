@@ -15,8 +15,7 @@ parser =argparse.ArgumentParser()
 parser.add_argument("--data-path",  required=True)
 # parser.add_argument("--attr-path",  required=True)
 parser.add_argument("--model-path", required=True)
-parser.add_argument("--type",  required=True, type=int)
-parser.add_argument("--device",  required=True)
+parser.add_argument("--num",  required=True)
 parser.add_argument("--debug", type=lambda x: bool(strtobool(x)), default=False, nargs="?", const=True,)
 
 # -----------------------------
@@ -32,10 +31,10 @@ def seed_everything(seed: int = 42):
     torch.cuda.manual_seed(seed)  # type: ignore
     torch.backends.cudnn.deterministic = True  # type: ignore
     torch.backends.cudnn.benchmark = True  # type: ignore
-    
+
 seed_everything(42)
 
-# device = 'cuda:5'
+device = 'cuda:0'
 
 # call dataset, dataloader
 import torchvision.transforms as T
@@ -51,30 +50,32 @@ transform = T.Compose([
 
 valid_dataset = torchvision.datasets.CIFAR10(root=args.data_path, train=False, transform=transform)
 
-classifier = torch.load(args.model_path, map_location='cpu')
+classifier = torch.load(args.model_path,  map_location='cpu')
 
 # zero baseline
 # baseline = torch.zeros_like(valid_dataset[0][0]).to(device)
-# baseline = torch.load('/data8/donghun/cifar10/tensor.pt')
-baseline = torch.load('/root/tensor.pt', map_location='cpu')
-print(args.type)
-baseline = baseline[args.type]
 
 pbar = tqdm(range(len(valid_dataset)))
-pbar.set_description(f" Generating [👾] | generating attribution | ")
+pbar.set_description(f" Evaluation [👾] | generating attribution zero | ")
 
-model = classifier.eval().to(args.device)
+model = classifier.eval().to(device)
 
 interpolation = []
 attribution = []
 
 for idx in pbar:
-    baseline = baseline.to(args.device)
+    ran = np.random.randint(len(valid_dataset))
+    if idx == ran:
+        ran = np.random.randint(len(valid_dataset))
+        if idx == ran:
+            ran = np.random.randint(len(valid_dataset))
+    
+    baseline = valid_dataset[ran][0].to(device)
     
     input, label = valid_dataset[idx]
-    input = input.to(args.device)
-    interp = linear_interpolation(input, 24, baseline).to(args.device) # tensor
-    attrib = integrated_gradient(model, input, label, baseline, interp, args.device) # tensor
+    input = input.to(device)
+    interp = linear_interpolation(input, 24, baseline).to(device) # tensor
+    attrib = integrated_gradient(model, input, label, baseline, interp, device='cuda:5') # tensor
     
     interpolation.append(interp.detach().cpu())
     attribution.append(attrib.detach().cpu())
@@ -88,13 +89,11 @@ attribution = torch.stack(attribution)
 
 print('please')
 
-# np.save(f'/home/dhlee/code/ig_inversion/results/cifar10/image_flat_{args.type}_linear_interpolation.npy', interpolation.numpy())
-# np.save(f'/home/dhlee/code/ig_inversion/results/cifar10/image_flat_{args.type}_linear_attribution.npy', attribution.numpy())
-# np.save(f'/home/dhlee/results/cifar10/image_flat_{args.type}_linear_interpolation.npy', interpolation.numpy())
-# np.save(f'/home/dhlee/results/cifar10/image_flat_{args.type}_linear_attribution.npy', attribution.numpy())
+np.save('/root/data/case/image_flat_linear_interpolation.npy', interpolation.numpy())
+np.save('/root/data/case/image_flat_linear_attribution.npy', attribution.numpy())
 
-np.save(f'/root/data/case/image_flat_{args.type}_linear_interpolation.npy', interpolation.numpy())
-np.save(f'/root/data/case/image_flat_{args.type}_linear_attribution.npy', attribution.numpy())
+# np.save('/home/dhlee/results/cifar10/image_linear_expected_interpolation.npy', interpolation.numpy())
+# np.save('/home/dhlee/results/cifar10/image_linear_expected_attribution.npy', attribution.numpy())
 
 print('finish')
 
