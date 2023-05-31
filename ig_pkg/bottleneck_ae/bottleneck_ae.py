@@ -1,9 +1,9 @@
 import torch 
 import torch.nn as nn 
 import torchvision 
-from autoencoder_modules.ae import AutoEncoder
-from autoencoder_modules.latents import ReductionBottleNeck
-from autoencoder_modules.basic_blocks import EncoderModule, DecoderModule 
+from ig_pkg.bottleneck_ae.autoencoder_modules.ae import AutoEncoder
+from ig_pkg.bottleneck_ae.autoencoder_modules.latents import ReductionBottleNeck
+from ig_pkg.bottleneck_ae.autoencoder_modules.basic_blocks import EncoderModule, DecoderModule 
 
 class BottleneckAE(AutoEncoder):
     def __init__(self, in_size, hidden_dim, **kwargs):
