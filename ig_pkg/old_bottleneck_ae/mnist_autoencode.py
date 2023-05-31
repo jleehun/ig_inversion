@@ -38,13 +38,13 @@ args = parser.parse_args()
 
 train_dataset, valid_dataset, info = get_mnist_dataset(args.data_path, 32, None)
 config = {
-        'epochs': 100,
+        'epochs': 30,
         'batch_size' : 32,
         'lr' : 1e-3,
         'clip_grad' : 1.0,
         'device' : "cuda:0",
         'num_workers' : 2,
-        "save_dir" : "results/mnist" 
+        "save_dir" : "results" 
     }
 
 

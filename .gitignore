@@ -211,3 +211,4 @@ untracked
 build/
 devel/
 .catkin*
+figure/*

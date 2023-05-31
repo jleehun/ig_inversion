@@ -40,6 +40,8 @@ seed_everything(42)
 # print(device)
 
 attr_path={
+    'zero': '/home/dhlee/results/mnist/linear_zero_attribution.npy',
+    
     '0': '/home/dhlee/results/mnist/linear_0_attribution.npy',
     '1': '/home/dhlee/results/mnist/linear_1_attribution.npy',
     '2': '/home/dhlee/results/mnist/linear_2_attribution.npy',

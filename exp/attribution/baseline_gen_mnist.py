@@ -15,7 +15,7 @@ parser =argparse.ArgumentParser()
 parser.add_argument("--data-path",  required=True)
 # parser.add_argument("--attr-path",  required=True)
 # parser.add_argument("--model-path", required=True)
-parser.add_argument("--type",  required=True)#, type=int)
+parser.add_argument("--type",  required=True, type=int)
 parser.add_argument("--device",  required=True)
 parser.add_argument("--debug", type=lambda x: bool(strtobool(x)), default=False, nargs="?", const=True,)
 
@@ -77,10 +77,10 @@ model.load_state_dict(torch.load(f"{path}/model_best.pt", map_location='cpu'))
 
 # call baseline
 
-# baseline = torch.load('/data8/donghun/cifar10/tensor.pt', map_location='cpu')
-# temp = baseline[args.type][0]
-# temp = T.Resize(28)(temp.unsqueeze(0))
-temp = torch.zeros((1, 28, 28))
+baseline = torch.load('/data8/donghun/cifar10/tensor.pt', map_location='cpu')
+temp = baseline[args.type][0]
+temp = T.Resize(28)(temp.unsqueeze(0))
+# temp = torch.zeros((1, 28, 28))
 #==========================================
 
 
