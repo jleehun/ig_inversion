@@ -154,7 +154,7 @@ class Cifar10Evaluator():
             # score = lodds(input, label, attr, model, device, **kwargs)
             # self.sample_result_dict[f'lodds_{self.method}_{kwargs["ratio"]}'].append(score)
             
-            morf, aopc, y_hat = one_stop(input, label, attr, model, device, **kwargs)
+            morf, aopc, y_hat = mnist_one_stop(input, label, attr, model, device, **kwargs)
             self.sample_result_dict[f'morf_{self.method}_{kwargs["ratio"]}'].append(morf)
             self.sample_result_dict[f'aopc_{self.method}_{kwargs["ratio"]}'].append(aopc)
             self.sample_result_dict[f'pred_{self.method}_{kwargs["ratio"]}'].append(y_hat)
