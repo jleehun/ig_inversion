@@ -76,3 +76,28 @@ def integrated_gradient(model, x, y, baseline, interpolation, device, **kwrags):
     output = output.abs()
     # print(6, output.shape)
     return output
+
+
+def image_heatmap(model, x, y, baseline, interpolation, device, **kwrags): 
+#     x = x.to(device)
+#     baseline = baseline.to(device)
+#     interpolation = interpolation.to(device)
+    model.zero_grad()
+    
+    X = Variable(interpolation, requires_grad=True).to(device)
+    X.retain_grad()
+    
+    output = model(X,)
+    score = torch.softmax(output, dim=-1)
+    class_score = torch.FloatTensor(X.size(0), output.size()[-1]).zero_().to(device).type(X.dtype)
+    class_score[:,y] = score[:,y]
+    output.backward(gradient=class_score)
+
+    gradient = X.grad  #Approximate the integral using the trapezoidal rule
+    gradient = (gradient[:-1] + gradient[1:]) / 2.0
+    output = (x - baseline) * gradient.mean(axis=1)
+    # output = output.mean(dim=0) # RGB mean
+    # print(5, output.shape)
+    output = output.abs()
+    # print(6, output.shape)
+    return output

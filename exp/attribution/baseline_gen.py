@@ -15,8 +15,8 @@ parser =argparse.ArgumentParser()
 parser.add_argument("--data-path",  required=True)
 # parser.add_argument("--attr-path",  required=True)
 parser.add_argument("--model-path", required=True)
-parser.add_argument("--type",  required=True, type=int)
-parser.add_argument("--method",  required=True, type=int)
+parser.add_argument("--type",  required=True, type=float)
+# parser.add_argument("--method",  required=True, type=int)
 parser.add_argument("--device",  required=True)
 parser.add_argument("--debug", type=lambda x: bool(strtobool(x)), default=False, nargs="?", const=True,)
 
@@ -61,8 +61,11 @@ classifier = torch.load(args.model_path, map_location='cpu')
 # temp = baseline[args.type]
 # baseline = baseline[args.type].to(args.device)
 
-baseline = torch.load('/home/dhlee/code/ig_inversion/results/baseline/cifar10_baseline_2.pt', map_location='cpu')
-temp = baseline[args.type]
+# baseline = torch.load('/home/dhlee/code/ig_inversion/results/baseline/cifar10_baseline_2.pt', map_location='cpu')
+# temp = baseline[args.type]
+
+temp = torch.ones(3, 32, 32) * (args.type)
+# print(sum(temp) / (3 * 32 * 32))
 
 pbar = tqdm(range(len(valid_dataset)))
 pbar.set_description(f" Generating [👾] | generating attribution | ")
@@ -72,7 +75,7 @@ model = classifier.eval().to(args.device)
 # interpolation = []
 attribution = []
 
-print(f'/data8/donghun/results/attribution_{args.method}/latent_{args.type}_linear_attribution.npy')
+# print(f'/data8/donghun/results/attribution_{args.method}/latent_{args.type}_linear_attribution.npy')
 for idx in pbar:
     
     baseline = temp.clone().detach().to(args.device)
@@ -94,7 +97,9 @@ attribution = torch.stack(attribution)
 
 print('please')
 
-np.save(f'/data8/donghun/results/attribution_{args.method}/latent_{args.type}_linear_attribution.npy', attribution.numpy())
+# np.save(f'/data8/donghun/results/attribution_{args.method}/latent_{args.type}_linear_attribution.npy', attribution.numpy())
+np.save(f'/data8/donghun/results/new/attribution/{args.type}_linear_attribution.npy', attribution.numpy())
+
 
 # np.save(f'/home/dhlee/code/ig_inversion/results/cifar10/image_flat_{args.type}_linear_interpolation.npy', interpolation.numpy())
 # np.save(f'/home/dhlee/code/ig_inversion/results/cifar10/image_flat_{args.type}_linear_attribution.npy', attribution.numpy())
