@@ -69,9 +69,9 @@ attr_path  = {
     # 'max': f'/data8/donghun/results/new/attribution/max_linear_attribution.npy',
     # 'min': f'/data8/donghun/results/new/attribution/min_linear_attribution.npy',
     
-    'one': f'/data8/donghun/results/new/attribution/1_linear_attribution.npy',
+    'one': f'/data8/donghun/results/new/attribution/1.0_linear_attribution.npy',
     'half': f'/data8/donghun/results/new/attribution/0.5_linear_attribution.npy',
-    'minus1': f'/data8/donghun/results/new/attribution/-1_linear_attribution.npy',
+    'minus1': f'/data8/donghun/results/new/attribution/-1.0_linear_attribution.npy',
     'minus5': f'/data8/donghun/results/new/attribution/-0.5_linear_attribution.npy',
     
 }[args.method]
