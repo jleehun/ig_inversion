@@ -15,10 +15,15 @@ parser =argparse.ArgumentParser()
 parser.add_argument("--data-path",  required=True)
 # parser.add_argument("--attr-path",  required=True)
 parser.add_argument("--model-path", required=True)
-parser.add_argument("--type",  required=True, type=float)
+parser.add_argument("--type",  required=True, type=int)
+# parser.add_argument("--type",  required=True, type=float)
 # parser.add_argument("--method",  required=True, type=int)
 parser.add_argument("--device",  required=True)
 parser.add_argument("--debug", type=lambda x: bool(strtobool(x)), default=False, nargs="?", const=True,)
+
+
+# python exp/attribution/baseline_gen.py  --data-path /data8/donghun/cifar10/untracked --model-path /data8/donghun/cifar10/results/densenet/script_model.pt --device cuda:7 --type 0
+
 
 # -----------------------------
 
@@ -50,7 +55,7 @@ transform = T.Compose([
 
 valid_dataset = torchvision.datasets.CIFAR10(root=args.data_path, train=False, transform=transform)
 
-classifier = torch.load(args.model_path, map_location='cpu')
+classifier = torch.jit.load(args.model_path, map_location='cpu')
 
 # zero baseline
 # baseline = torch.zeros_like(valid_dataset[0][0]).to(device)
@@ -61,10 +66,12 @@ classifier = torch.load(args.model_path, map_location='cpu')
 # temp = baseline[args.type]
 # baseline = baseline[args.type].to(args.device)
 
-# baseline = torch.load('/home/dhlee/code/ig_inversion/results/baseline/cifar10_baseline_2.pt', map_location='cpu')
-# temp = baseline[args.type]
+print('alt')
+# baseline = torch.load('/home/dhlee/code/ig_inversion/ten/grid_cir.pt', map_location='cpu')
+baseline = torch.load('/home/dhlee/code/ig_inversion/ten/grid_alt.pt', map_location='cpu')
+temp = baseline[args.type]
 
-temp = torch.ones(3, 32, 32) * (args.type)
+# temp = torch.ones(3, 32, 32) * (args.type)
 # print(sum(temp) / (3 * 32 * 32))
 
 pbar = tqdm(range(len(valid_dataset)))
@@ -78,7 +85,7 @@ attribution = []
 # print(f'/data8/donghun/results/attribution_{args.method}/latent_{args.type}_linear_attribution.npy')
 for idx in pbar:
     
-    baseline = temp.clone().detach().to(args.device)
+    baseline = temp.clone().detach().to(args.device, dtype=torch.float)
     
     input, label = valid_dataset[idx]
     input = input.to(args.device)
@@ -97,8 +104,11 @@ attribution = torch.stack(attribution)
 
 print('please')
 
+# np.save(f'/data8/donghun/results/new/attribution/circle_{args.type}_linear_attribution.npy', attribution.numpy())
+np.save(f'/data8/donghun/results/new/attribution/alt_{args.type}_linear_attribution.npy', attribution.numpy())
+
+# np.save(f'/data8/donghun/results/new/attribution/{args.type}_linear_attribution.npy', attribution.numpy())
 # np.save(f'/data8/donghun/results/attribution_{args.method}/latent_{args.type}_linear_attribution.npy', attribution.numpy())
-np.save(f'/data8/donghun/results/new/attribution/{args.type}_linear_attribution.npy', attribution.numpy())
 
 
 # np.save(f'/home/dhlee/code/ig_inversion/results/cifar10/image_flat_{args.type}_linear_interpolation.npy', interpolation.numpy())

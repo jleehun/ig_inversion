@@ -74,6 +74,18 @@ attr_path  = {
     'minus1': f'/data8/donghun/results/new/attribution/-1.0_linear_attribution.npy',
     'minus5': f'/data8/donghun/results/new/attribution/-0.5_linear_attribution.npy',
     
+    'cir_1': f'/data8/donghun/results/new/attribution/circle_0_linear_attribution.npy',
+    'cir_2': f'/data8/donghun/results/new/attribution/circle_1_linear_attribution.npy',
+    'cir_4': f'/data8/donghun/results/new/attribution/circle_2_linear_attribution.npy',
+    'cir_8': f'/data8/donghun/results/new/attribution/circle_3_linear_attribution.npy',
+    'cir_16': f'/data8/donghun/results/new/attribution/circle_4_linear_attribution.npy',
+    
+    'alt_1': f'/data8/donghun/results/new/attribution/alt_0_linear_attribution.npy',
+    'alt_2': f'/data8/donghun/results/new/attribution/alt_1_linear_attribution.npy',
+    'alt_4': f'/data8/donghun/results/new/attribution/alt_2_linear_attribution.npy',
+    'alt_8': f'/data8/donghun/results/new/attribution/alt_3_linear_attribution.npy',
+    'alt_16': f'/data8/donghun/results/new/attribution/alt_4_linear_attribution.npy',
+    
 }[args.method]
 
 
